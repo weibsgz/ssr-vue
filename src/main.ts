@@ -1,23 +1,14 @@
-import { createApp } from 'vue'
+import { createApp,createSSRApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import { store } from './store'
 import ElementPlus,{ElMessage} from 'element-plus'
 import 'element-plus/dist/index.css'
 import i18n from './language/i18n'
 
 import airbnb from './db' // 引入数据库和对象仓库
 
-// console.log('airbnb.languageObjectStore',airbnb.languageObjectStore)  
-//打印出
-/**
- * {
- *   language:{
- *       keyPath:"id",
- *       indexs:["name"]
- *   }
- * }
- * 
- */
+
 
 router.beforeEach((to, from, next) => {
   airbnb.airbnbDB.openStore({
@@ -34,6 +25,13 @@ router.beforeEach((to, from, next) => {
 const app = createApp(App)
 app.config.globalProperties.$message = ElMessage
 app.use(router)
+app.use(store)
 app.use(ElementPlus)
 app.use(i18n)
 app.mount('#app')
+
+
+// //用于创建服务端渲染的函数
+// function createApp() {
+//   const app = createSSRApp(APP)
+// }

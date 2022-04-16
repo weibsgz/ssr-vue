@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref , defineEmits,getCurrentInstance} from 'vue'
+import {useStore} from 'vuex'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import en from 'element-plus/es/locale/lang/en'
 import { saveLanguageApi,fetchLanguageApi} from '@/api/layout'
@@ -7,8 +8,9 @@ import {useRouter} from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {IResultOr} from '@/api/interface'
 import  { userLogoutApi } from '@/api/login'
-const { t } = useI18n()
+const { t , locale: localeLanguage } = useI18n()
 const router = useRouter()
+const store = useStore()
 const activeIndex = ref("orders")
 const {proxy}:any = getCurrentInstance()
 
@@ -21,12 +23,16 @@ const emit = defineEmits<{
 const handleSelect = (e:any)=>{
     console.log(e)
     if(e === 'zh') {
-        emit('changeLan',zhCn)
-        saveLanguage('zh')
+        // emit('changeLan',zhCn)        
+        // saveLanguage('zh')
+        store.dispatch('saveLanguage',zhCn)
+        localeLanguage.value = e
     }
     else if(e ==='en') {
-        emit('changeLan',en)
-        saveLanguage('en')
+        // emit('changeLan',en)        
+        // saveLanguage('en')
+        store.dispatch('saveLanguage',en)
+        localeLanguage.value = e
     }
     else if(e === 'login') {
         router.push('/login')
@@ -37,14 +43,14 @@ const handleSelect = (e:any)=>{
 }
 
 
-function saveLanguage(language:any) {
-    saveLanguageApi(language).then(res=>{
-        let {success} = res
-        if(success) {
-            console.log('保存当前语言包成功')
-        }
-    })
-}
+// function saveLanguage(language:any) {
+//     saveLanguageApi(language).then(res=>{
+//         let {success} = res
+//         if(success) {
+//             console.log('保存当前语言包成功')
+//         }
+//     })
+// }
 
 //获取当前从indexDB查询到的语言包,使页面显示当前的语言 （达到了每次加载页面会从indexDB取语言的目的）
 function getLanguage() {
@@ -72,7 +78,8 @@ function userLogout() {
     if(success) {
       proxy.$message.success(message)
       router.push({name:'login'})
-      localStorage.setItem('userStatus',0)
+    //   localStorage.setItem('userStatus',0)
+    store.commit("setUserStatus",0)
     }else {
       proxy.$message.error(message)
     }
@@ -82,13 +89,18 @@ function userLogout() {
 
 // getLanguage()
 
-const userStatus = localStorage.getItem('userStatus')
+// const userStatus = localStorage.getItem('userStatus')
 
 </script>
 
 <template>
     <div class="header-common">
+        
+     
         <img class="logo" src="../../assets/images/layout/logo.png" alt="">
+         <!-- <p style="margin-left:30px">
+            {{store.state.count}}
+         </p> -->
         <el-menu
             :default-active="activeIndex"
             class="el-menu-demo"
@@ -102,7 +114,7 @@ const userStatus = localStorage.getItem('userStatus')
                 <el-menu-item index="zh">中文</el-menu-item>
                 <el-menu-item index="en">EN</el-menu-item>
             </el-sub-menu>
-            <el-sub-menu index="avatar" v-if="userStatus==1">
+            <el-sub-menu index="avatar" v-if="store.state.userStatus==1">
                 <template #title>><img class="avatar" src="../../assets/images/layout/avatar.jpg" alt=""></template>
                 <el-menu-item index="logout">退出</el-menu-item>
             </el-sub-menu>

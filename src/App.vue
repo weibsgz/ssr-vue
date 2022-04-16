@@ -18,32 +18,33 @@
 import {ref} from 'vue'
 import {useRoute} from 'vue-router'
 import { ElConfigProvider } from 'element-plus'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
-import en from 'element-plus/es/locale/lang/en'
+// import zhCn from 'element-plus/es/locale/lang/zh-cn'
+// import en from 'element-plus/es/locale/lang/en'
+import {useStore} from 'vuex'
 // import i18n from '@/language/i18n'
-import { useI18n } from 'vue-i18n'
+// import { useI18n } from 'vue-i18n'
 import headerCommon from '@/components/layout/headerCommon.vue'
 import footerCommon from '@/components/layout/footerCommon.vue'
-
+const store = useStore()
 // console.log(i18n.global.locale)
-const locale = ref(zhCn)
-let clickNum = ref(0);
-const { locale: localeLanguage } = useI18n()
+// const locale = ref(zhCn)
+// let clickNum = ref(0);
+// const { locale: localeLanguage } = useI18n()
 
 
-const changeLan = (language:any)=>{
-  //处理elment组件语言
-  locale.value = language
-  localeLanguage.value = language.name
-  // //处理自定义语言
-  // if(language.name === 'zh-cn') {
-  //   i18n.global.locale = 'zh'
-  // }
-  // else if(language.name === 'en') {
-  //   i18n.global.locale = 'en'
-  // }
+// const changeLan = (language:any)=>{
+//   //处理elment组件语言
+//   locale.value = language
+//   localeLanguage.value = language.name
+//   // //处理自定义语言
+//   // if(language.name === 'zh-cn') {
+//   //   i18n.global.locale = 'zh'
+//   // }
+//   // else if(language.name === 'en') {
+//   //   i18n.global.locale = 'en'
+//   // }
   
-}
+// }
 
 const route = useRoute()
 const noHeaderFooter = ref(['/login'])
@@ -53,7 +54,7 @@ const noHeaderFooter = ref(['/login'])
 
 <template>
   <!-- el-config-provider只适用ELEMENT的组件 -->
-  <el-config-provider :locale="locale">
+  <el-config-provider :locale="store.state.locale">
   <!-- {{$route.fullPath}} -->
   <headerCommon @changeLan = "changeLan" v-show="noHeaderFooter.indexOf($route.fullPath) < 0" />
   <div class="container">

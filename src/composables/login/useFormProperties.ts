@@ -1,9 +1,13 @@
 //登录表单相关hooks
-import { ref, reactive,getCurrentInstance } from 'vue'
+import { ref, reactive } from 'vue'
 
-export default function useFormProperties() {
+interface IRuleForm {
+    mobile:string,
+    password:string
+}
+export default function useFormProperties(t:any) {
 
-    const {proxy}:any = getCurrentInstance()
+
     const activeName = ref('login')
     
     let loginText = ref(t('login.loginBtn'))
@@ -34,7 +38,6 @@ export default function useFormProperties() {
       })
 
     return {
-        proxy,
         activeName,
         loginText,
         ruleFormRef,

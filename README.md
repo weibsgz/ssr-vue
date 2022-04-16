@@ -47,3 +47,9 @@ import indexDB from '@/utils/indexDB'
 <el-button @click="getItem('elephant',3)">查询某一条数据</el-button> 
 
 ```
+
+### SSR
+
+1. client-entry.ts 客户端入口文件
+
+之前的main.ts页面的入口功能要引入中去  main.ts是一些服务端和客户端共用的逻辑

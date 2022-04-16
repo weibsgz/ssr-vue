@@ -6,6 +6,9 @@ import {ref} from 'vue'
 // import {fetchRoomList,fetchElephant} from '@/api/index'
 // import i18n from '@/language/i18n'
 // import indexDB from '@/utils/indexDB'
+
+import { useStore} from 'vuex'
+const store = useStore()
 // const {t} = useI18n()
 // console.log(t)
 
@@ -68,6 +71,15 @@ const value2 = ''
 
 // getElephantStore()
 
+const setMutation = ()=>{
+   store.commit('setCount',2)
+}
+
+const setAction = ()=>{
+   store.dispatch('fetchCount',10)
+}
+
+
 </script>
 
 <template>
@@ -81,6 +93,10 @@ const value2 = ''
 
       <div>{{ $t('message.home')}}123 <button @click = "changeLan()">切换语言</button></div> -->
       <!-- <div class="text">{{ $t('message.home')}}</div> -->
+   
+     <el-button @click="setMutation">mutation</el-button>
+     <el-button @click="setAction">action</el-button>
+     
       <el-date-picker
         v-model="value2"
         type="date"
