@@ -1,13 +1,20 @@
 <script setup lang="ts">
-import { ref , defineEmits,getCurrentInstance} from 'vue'
+import { ref , defineEmits,getCurrentInstance, defineAsyncComponent,onMounted} from 'vue'
 import {useStore} from 'vuex'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
-import en from 'element-plus/es/locale/lang/en'
+import zhCn from 'element-plus/lib/locale/lang/zh-cn'
+import en from 'element-plus/lib/locale/lang/en'
 import { saveLanguageApi,fetchLanguageApi} from '@/api/layout'
 import {useRouter} from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {IResultOr} from '@/api/interface'
 import  { userLogoutApi } from '@/api/login'
+
+//创建一个只有在需要时才会加载的异步组件,为了提升页面加载性能
+const orderPopover = defineAsyncComponent(() =>
+  import('@/views/order/components/orderPopover.vue')
+)
+
+
 const { t , locale: localeLanguage } = useI18n()
 const router = useRouter()
 const store = useStore()
@@ -40,6 +47,12 @@ const handleSelect = (e:any)=>{
     else if(e === 'logout') {
         userLogout()
     }
+    else if(e === 'orders') {
+        store.commit('setOrderVisible',true)
+    }
+     else if(e === 'records') {
+        router.push('/record')
+    }
 }
 
 
@@ -56,14 +69,20 @@ const handleSelect = (e:any)=>{
 function getLanguage() {
     fetchLanguageApi().then(res=>{
         let {success,result} = res
-        const {name} = result 
+        const {name} = result //取不到
+
+        console.log('name',name,result)
         if(success) {
-            if(name === 'zh') {
-                emit('changeLan',zhCn)                
+             if(name === 'zh') {    
+                store.dispatch('saveLanguage',zhCn)
+                localeLanguage.value = name
             }
-            else if(name ==='en') {
-                emit('changeLan',en)              
+            else if(name ==='en') {           
+                store.dispatch('saveLanguage',en)
+                localeLanguage.value = name
             }
+
+
            
             console.log('获取当前语言包成功！')
         }
@@ -85,9 +104,12 @@ function userLogout() {
     }
   })
 }
+//刷新页面也可以重新获取语言 onMounted 服务端渲染不会执行
+onMounted(() => {
+    getLanguage()
+})
 
 
-// getLanguage()
 
 // const userStatus = localStorage.getItem('userStatus')
 
@@ -97,7 +119,7 @@ function userLogout() {
     <div class="header-common">
         
      
-        <img class="logo" src="../../assets/images/layout/logo.png" alt="">
+        <img @click= "()=>{router.push({name:'home'})} " class="logo" src="../../assets/images/layout/logo.png" alt="">
          <!-- <p style="margin-left:30px">
             {{store.state.count}}
          </p> -->
@@ -107,7 +129,21 @@ function userLogout() {
             mode="horizontal"
             @select="handleSelect"
         >
-            <el-menu-item index="orders">{{ t('header.orders')}}</el-menu-item>
+            <el-menu-item index="orders">
+                {{ t('header.orders')}}
+            
+                <template v-if="store.state.orderVisible">
+                    <suspense>
+                        <template #default>
+                            <orderPopover></orderPopover>
+                        </template>
+                        <template #fallback>
+                            <div class="loading-block">拼命加载中...</div>
+                        </template>
+                    </suspense>
+                </template>
+            
+            </el-menu-item>
             <el-menu-item index="records">>{{ t('header.records')}}</el-menu-item>
             <el-sub-menu index="language">
                 <template #title>>{{ t('header.language')}}</template>
@@ -123,6 +159,10 @@ function userLogout() {
             </el-menu-item>  
         </el-menu>
     </div>
+
+    
+    
+
 </template>
 
 <style scoped lang="scss">

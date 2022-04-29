@@ -2,9 +2,9 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 
-// const AutoImport = require('unplugin-auto-import/webpack')
-// const Components = require('unplugin-vue-components/webpack')
-// const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
+// import AutoImport from 'unplugin-auto-import/vite'
+// import Components from 'unplugin-vue-components/vite'
+// import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 
 const path = require("path");
@@ -16,8 +16,8 @@ export default defineConfig({
   plugins: [
     vue(),
     // AutoImport({
-    //   resolvers: [ElementPlusResolver()],
-    // }),
+    //   resolvers: [ElementPlusResolver()]
+    // }),  
     // Components({
     //   resolvers: [ElementPlusResolver()],
     // })
@@ -31,6 +31,26 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         additionalData: `@import "@/assets/scss/variable.scss";@import "@/assets/scss/main.scss";`  //引入scss公共变量
+      }
+    }
+  },
+  server:{
+    // host:'localhost',
+    // port:5000,
+    proxy:{
+      '/release':{
+        target:"http://110.42.184.111",
+        rewrite: (path) => path.replace(/^\/release/, '')
+        /**
+         * 共用的axios封装
+         * const defaultConfig = {
+                timeout:5000,
+                baseURL:import.meta.env.PROD ? '' : 'http://localhost:5000/release'
+           }
+         * 
+         */
+        //本地开发的 http://localhost:5000/release/api/xxxxx
+        //          http://110.42.184.111/api/xxxxxxx 
       }
     }
   }

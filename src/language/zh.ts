@@ -35,5 +35,18 @@ export default {
       signTab: '注册',
       placeMobile: '请输入正确的手机号',
       placePass: '请输入正确的密码'
+    },
+    home: {
+      h2Title: '跨年特惠房源',
+      subTitle: '品质房源，低至 5 折',
+      city: {
+        hz: '杭州',
+        sh: '上海',
+        nj: '南京',
+        cd: '成都',
+        cq: '重庆',
+        bj: '北京',
+        sz: '苏州'
+      }
     }
   }

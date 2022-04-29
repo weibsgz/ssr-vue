@@ -8,9 +8,6 @@ import airbnb from '../db'
 // const airDB = new IndexDB('airbnb')
 
 
-export function fetchRoomList() {
-    return http.httpGet('https://service-ase3oocp-1302839645.sh.apigw.tencentcs.com/api/room/room/getRoomList?pageNo=1&pageSize=3')
-}
 
 //MOCK接口
 

@@ -37,7 +37,7 @@ import { ElMessage } from 'element-plus'
 
 const defaultConfig = {
     timeout:5000,
-    baseUrl:''
+    baseURL:import.meta.env.PROD ? '' : 'http://localhost:5000/release' //本地服务端渲染需要设置端口
 }
 
 
@@ -72,8 +72,9 @@ class Http {
           return res
         }, (err:any) => {
           // 对响应错误的处理，处理一些接口失败所返回的状态码，比如：3XX,4XX,5XX范围内的状态码
-          return Promise.reject(err)
           ElMessage('服务器异常')
+          return Promise.reject(err)
+         
         })
       }
 

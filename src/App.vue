@@ -55,8 +55,8 @@ const noHeaderFooter = ref(['/login'])
 <template>
   <!-- el-config-provider只适用ELEMENT的组件 -->
   <el-config-provider :locale="store.state.locale">
-  <!-- {{$route.fullPath}} -->
-  <headerCommon @changeLan = "changeLan" v-show="noHeaderFooter.indexOf($route.fullPath) < 0" />
+
+  <headerCommon v-show="noHeaderFooter.indexOf($route.fullPath) < 0" />
   <div class="container">
     <router-view></router-view>
   </div>

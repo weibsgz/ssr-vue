@@ -47,7 +47,7 @@ export default class DB {
 
     // 打开数据库 改写后可同时打开多个
   public openStore(stores: any) {
-    const request = window.indexedDB.open(this.dbname, 6)
+    const request = window.indexedDB.open(this.dbname, 8)
     console.log('request',request)
    
     return new Promise((resolve, reject) => {
