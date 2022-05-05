@@ -8,7 +8,7 @@ const express = require('express')
 const { createServer: createViteServer } = require('vite')
  //这个中间件的功能是用户访问服务器根目录时 设置用户的访问的页面路径
  //也可以直接采用express.static()实现相同功能
-const serverStatic = require('serve-static')
+ const serveStatic = require('serve-static')
 const isProd =  process.env.NODE_ENV === 'production'  //开发环境和生产环境区分
 
 
@@ -29,7 +29,8 @@ async function createServer() {
     app.use(vite.middlewares)
   }
   else {
-    app.use(serverStatic(path.resolve(__dirname, 'dist/client')))
+    
+    app.use(serveStatic(path.resolve(__dirname, 'dist/client'), { index: false }))
   }
 
   
@@ -60,7 +61,7 @@ async function createServer() {
       else {
          // 1. 读取 index.html
           template = fs.readFileSync(
-          path.resolve(__dirname, './dist/client/index.html'),
+          path.resolve(__dirname, 'dist/client/index.html'),
           'utf-8'
          )
           // 3. 加载服务器入口
@@ -75,14 +76,29 @@ async function createServer() {
 
       const manifest  = require('./dist/client/ssr-manifest.json')
       const {appHtml,state,preloadLinks} = await render(url,manifest )
-  
+      
+    
+
       // 5. 注入渲染后的应用程序 HTML 到模板中。
+
+
+      const { roomDetail } = state
+      const { title:roomTitle="",owner } = roomDetail || {}
+      const { introduce="" } = owner || {}
+      const { meta } = state.route
+      const { title, keywords, description } = meta
+
+
       const html = template
       // 路由相关组件资源预加载 （css,js,图片，字体等）
       .replace(`<!--preload-links-->`, preloadLinks)
       .replace(`<!--ssr-outlet-->`, appHtml)
       // 注水 ：服务端渲染页面的HTML结构 需要注入STATE 才能激活事件
       .replace('\'<!--vuex-state-->\'',JSON.stringify(state))
+
+      .replace('<title>', `<title>${title}`)
+      .replace('<meta name="keywords" content="" />', `<meta name="keywords" content="${keywords}${introduce}" />`)
+      .replace('<meta name="description" content="" />', `<meta name="description" content="${description}${introduce}" />`)
   
       // 6. 返回渲染后的 HTML。
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)

@@ -85,7 +85,28 @@ router.isReady().then(()=>{
 
     })
   
-  
+    // 处理详情页的meta信息用
+    router.afterEach((to, from, next) => {
+      console.log('router.afterEach')
+      const { roomDetail } = store.state
+      console.log('store',roomDetail,to.meta)
+      const { title:roomTitle="",owner } = roomDetail || {}
+      const { introduce="" } = owner || {}
+      const { meta } = to
+      const { title, keywords, description } = meta
+       if(title){
+         document.title = `${title}${roomTitle}`
+       } else {
+         document.title = ""
+       }
+      
+      const keywordsMeta = document.querySelector('meta[name="keywords"]')
+      keywordsMeta && keywordsMeta.setAttribute("content",`${keywords}${introduce}`)
+    
+      const descriptionMeta = document.querySelector('meta[name="description"]')
+      descriptionMeta?.setAttribute("content",`${description}${introduce}`)
+    
+    })
 
 
 

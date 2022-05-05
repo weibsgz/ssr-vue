@@ -16,6 +16,8 @@ const { proxy }: any = getCurrentInstance()
 const store = useStore()
 const router = useRouter()
 
+const loading  = ref(true)
+
 function fetchRecord() {
   fetchRecordApi().then(res => {
     const { success, message, result } = res
@@ -23,6 +25,7 @@ function fetchRecord() {
       recordData.value = result
       console.log('recordData',JSON.stringify(recordData))
       data.recordData1 = result
+      loading.value = false
     } else {
       proxy.$message.error(message)
     }
@@ -67,13 +70,30 @@ function toDeail(item: any) {
 <div class="record-page">
 
     <div class="main-wrapper">
-      <div class="column-style">
-        <div class="item" v-for="(item, index) in recordData" :key="index" @click="toDeail(item)">
-          <el-image :src="item.pictureUrl" :alt="item.title"></el-image>
-          <p class="title">{{ item.title }}</p>
-          <p class="price">¥{{ item.price }}</p>
-        </div>
-      </div>
+
+      <el-skeleton animated :loading="loading"> 
+         <template #template>
+          <div class="column-style">
+            <div class="item" v-for="i in 9" :key="i">
+              <el-skeleton-item style="width: 315px; height: 240px; border-radius: 4px;"  variant="image"/>
+              <el-skeleton-item style="width: 100%;margin-top: 15px;" variant="p"  />
+              <el-skeleton-item style="width:30%;" variant="p" />
+            </div>
+          </div>
+        </template>
+      
+        <template #default>
+            <div class="column-style" v-if="recordData.length > 0">
+              <div class="item" v-for="(item, index) in recordData" :key="index" @click="toDeail(item)">
+                <el-image :src="item.pictureUrl" :alt="item.title"></el-image>
+                <p class="title">{{ item.title }}</p>
+                <p class="price">¥{{ item.price }}</p>
+              </div>
+            </div>
+            <el-empty v-else description="暂无浏览记录"></el-empty>
+        </template>
+      </el-skeleton>
+ 
     </div>
 </div></template>
 
